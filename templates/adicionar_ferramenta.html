@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Adicionar Ferramenta</title>
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background-color: #fff;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #555;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input[type="file"] {
+            padding: 6px;
+            border: none;
+            background-color: #f9f9f9;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Adicionar Nova Ferramenta</h1>
+        <form action="{{ url_for('adicionar_ferramenta') }}" method="post" enctype="multipart/form-data">
+            <label for="nome_ferramenta">Nome da Ferramenta:</label>
+            <input type="text" id="nome_ferramenta" name="nome_ferramenta" required>
+            
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" name="descricao" required></textarea>
+            
+            <label for="nome_pagina">Nome da Página:</label>
+            <input type="text" id="nome_pagina" name="nome_pagina" required>
+
+            <!-- Novo campo para Nome Menor Ferramenta -->
+            <label for="nome_menor_ferramenta">Nome Menor da Ferramenta:</label>
+            <input type="text" id="nome_menor_ferramenta" name="nome_menor_ferramenta" required>
+            
+            <label for="img_ferramenta">Imagem da Ferramenta:</label>
+            <input type="file" id="img_ferramenta" name="img_ferramenta" accept="image/*" required>
+            
+            <button type="submit">Adicionar Ferramenta</button>
+        </form>
+    </div>
+</body>
+</html>

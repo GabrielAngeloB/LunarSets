@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editar_usuario.css') }}">
+<title>Editar Usuário</title>
+<style>
+
+
+</style>
+
+
+<div class="container profile-container text-center">
+    <div class="profile-header">
+        <img id="profileImagePreview" src="{{ url_for('static', filename=usuario.img_perfil) }}" alt="Perfil" class="profile-image">
+        <h2 class="profile-name">{{ usuario['nome_usuario'] }}</h2>
+    </div>
+
+    <hr class="my-4">
+
+    <form method="POST" action="{{ url_for('editar_usuario') }}" enctype="multipart/form-data" id="editForm">
+        <div class="row profile-info">
+            <div class="col-md-6 mb-3">
+                <h5>Nome:</h5>
+                <input type="text" class="form-control" name="nome_usuario" value="{{ usuario['nome_usuario'] }}" minlength="5" maxlength="20" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <h5>Email:</h5>
+                <input type="email" class="form-control" name="email_usuario" value="{{ usuario['email_usuario'] }}" required>
+            </div>
+            <div class="col-md-12 mb-3">
+                <h5>Bio:</h5>
+                <textarea class="form-control" name="bio_usuario" rows="3" maxlength="300" placeholder="Escreva algo sobre você..." style="text-align: justify;">{{ usuario['bio_usuario'] }}</textarea>
+            </div>
+            <div class="col-md-6 mb-3">
+                <h5>Imagem de Perfil:</h5>
+                <input type="file" class="form-control" name="img_perfil" accept="image/*" id="imgInput">
+            </div>
+            <div class="col-md-6 mb-3" style="margin:auto;">
+                <h5>Senha Atual:</h5>
+                <input type="password" class="form-control" name="senha_usuario" placeholder="Confirme sua senha para alterar os dados" required>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center mt-3">
+            <button type="button" id="saveButton" class="btn btn-success profile-btn" disabled>
+                <i class="fas fa-save animated-icon"></i> Salvar Alterações
+            </button>
+            
+            <a href="{{url_for('editar_usuario')}}" class="btn btn-secondary ms-3 profile-btn">
+                <i class="fas fa-undo animated-icon"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('imgInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profileImagePreview').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+            enableSaveButton();
+        }
+    });
+
+    function enableSaveButton() {
+        document.getElementById("saveButton").disabled = false;
+    }
+
+    const originalData = {
+        nome_usuario: '{{ usuario["nome_usuario"] }}',
+        email_usuario: '{{ usuario["email_usuario"] }}',
+        bio_usuario: '{{ usuario["bio_usuario"] }}'
+    };
+
+    document.querySelectorAll("input, textarea").forEach(input => {
+        input.addEventListener("input", function() {
+            const nomeAlterado = document.querySelector('input[name="nome_usuario"]').value !== originalData.nome_usuario;
+            const emailAlterado = document.querySelector('input[name="email_usuario"]').value !== originalData.email_usuario;
+            const bioAlterada = document.querySelector('textarea[name="bio_usuario"]').value !== originalData.bio_usuario;
+
+            if (nomeAlterado || emailAlterado || bioAlterada || document.querySelector('input[name="img_perfil"]').files.length > 0) {
+                enableSaveButton();
+            } else {
+                document.getElementById("saveButton").disabled = true;
+            }
+        });
+    });
+
+    document.getElementById("saveButton").addEventListener("click", function(event) {
+        const senhaUsuario = document.querySelector('input[name="senha_usuario"]').value;
+
+        if (!senhaUsuario) {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'warning',
+                title: 'Por favor, insira sua senha atual para salvar as alterações.',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        } else {
+            Swal.fire({
+                title: "Tem certeza?",
+                text: "Você não poderá reverter esta ação!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#67c29c",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sim, salvar!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: "Verificando!",
+                        text: "Verificando suas credenciais!.",
+                        icon: "info"
+                    }).then(() => {
+                        document.querySelector("form").submit();
+                    });
+                }
+            });
+        }
+    });
+</script>
+
+
+{% endblock %}

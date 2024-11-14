@@ -1,0 +1,205 @@
+body {
+    background-image: url(/static/img/fundo/insana.jpg);
+    color: #343a40;
+    padding-top: 25px;
+}
+
+/* Container principal do perfil */
+.profile-container {
+    max-width: 950px;
+    margin: 50px auto;
+    background-color: rgb(31, 30, 30);
+    border-radius: 15px;
+    box-shadow: 0px 0px 15px rgba(78, 1, 85, 0.6);
+    padding: 30px;
+}
+
+/* Foto de perfil */
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(to right, black, purple); /* Gradiente de borda */
+    padding: 4px; /* Para ajustar a espessura da borda */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: -80px;
+    transition: transform 0.3s ease;
+}
+
+.profile-image img {
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+}
+.profile-image:hover {
+    transform: scale(1.05);
+}
+
+.profile-name {
+font-size: 30px;
+font-weight: bold;
+color: white;
+margin-top: 20px;
+text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 15px rgba(255, 255, 255, 0.6);
+}
+
+
+.profile-title {
+    font-size: 16px;
+    color: #6c757d;
+}
+
+/* Seção de informações */
+.profile-info h5 {
+    font-weight: bold;
+    color: white;
+}
+
+.profile-info p {
+    color: #6c757d;
+}
+
+/* Botões com animação */
+.profile-btn {
+    font-size: 16px;
+    padding: 12px 25px;
+    margin-top: 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.profile-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+/* Cards de conquistas */
+.achievement-card {
+    background-color: rgb(97, 2, 121);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(78, 1, 85, 0.6);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.achievement-card:hover {
+    transform: scale(1.05);
+}
+
+.achievement-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+/* Ícones animados */
+.animated-icon {
+    font-size: 20px;
+    margin-right: 8px;
+    transition: transform 0.3s ease;
+}
+
+.profile-btn:hover .animated-icon {
+    transform: rotate(360deg);
+}
+.border-valid {
+    border: 2px solid green;
+}
+.border-invalid {
+    border: 2px solid red;
+}
+.form-control1:focus {
+    color: #212529;
+    background-color: #fff;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(100, 161, 157, 0.0);
+}
+@media (max-width: 576px) {
+    .profile-container {
+        max-width: 95%;
+        margin-left: 5px;
+        margin-right: -5px;
+        margin-top: 85px; /* Margem superior ainda maior para centralização */
+        padding-right: 15spx;
+        padding-left: 15px;
+    }
+
+    .profile-image {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-name {
+        font-size: 24px;
+    }
+
+    .profile-title {
+        font-size: 16px;
+    }
+
+    .profile-info h5, .profile-info p {
+        font-size: 0.9rem;
+    }
+
+    .achievement-card {
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+
+    .profile-btn {
+        width: 180px;
+        margin-bottom: 10px;
+        padding: 15px;
+        margin-left:13px;
+    }
+
+    .d-flex {
+        align-items: center;
+    }
+}
+
+@media (max-width: 440px) {
+    .profile-container {
+        max-width: 95%;
+        margin-left: 5px;
+        margin-right: -5px;
+        margin-top: 190px; /* Margem superior ainda maior para centralização */
+        padding-right: 15spx;
+        padding-left: 15px;
+    }
+
+    .profile-image {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-name {
+        font-size: 24px;
+    }
+
+    .profile-title {
+        font-size: 16px;
+    }
+
+    .profile-info h5, .profile-info p {
+        font-size: 0.9rem;
+    }
+
+    .achievement-card {
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+
+    .profile-btn {
+        width: 180px;
+        margin-bottom: 10px;
+        padding: 15px;
+        margin-left:13px;
+    }
+
+    .d-flex {
+        align-items: center;
+    }
+}

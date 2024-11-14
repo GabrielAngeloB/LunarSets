@@ -1,0 +1,259 @@
+/* Estilos Gerais */
+body {
+    background-image: url(/static/img/fundo/insana.jpg);
+    color: #343a40;
+    padding-top: 25px;
+}
+
+/* Container principal do perfil */
+.profile-container {
+    max-width: 950px;
+    margin-top:30px;
+    background-color: rgb(31, 30, 30);
+    border-radius: 15px;
+    box-shadow: 0px 0px 15px rgba(78, 1, 85, 0.6);
+    padding: 30px;
+    text-align: center;
+}
+
+/* Foto de perfil */
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(to right, black, purple);
+    padding: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: -80px;
+    transition: transform 0.3s ease;
+}
+
+.profile-image img {
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+}
+
+/* Nome e título do usuário */
+.profile-name {
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+    margin-top: 20px;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 15px rgba(255, 255, 255, 0.6);
+}
+
+.profile-title {
+    font-size: 18px;
+    color: #c2c4c7;
+}
+
+/* Seção de informações */
+.profile-info h5 {
+    font-weight: bold;
+    color: white;
+}
+
+.profile-info p {
+    color: #6c757d;
+}
+
+/* Botões com animação */
+.profile-btn {
+    font-size: 16px;
+    padding: 12px 25px;
+    margin-top: 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    width: 45%;
+    margin-bottom: 10px;
+}
+
+.profile-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+/* Cards de conquistas */
+.achievement-card {
+    background-color: rgb(97, 2, 121);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(78, 1, 85, 0.6);
+    text-align: center;
+    transition: transform 0.3s ease;
+    height:97%;
+}
+
+.achievement-card:hover {
+    transform: scale(1.05);
+}
+
+.achievement-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+/* Ícones animados */
+.animated-icon {
+    font-size: 20px;
+    margin-right: 8px;
+    transition: transform 0.3s ease;
+}
+
+.profile-btn:hover .animated-icon {
+    transform: rotate(360deg);
+}
+@media (max-width: 950px) {
+    .profile-container {
+        max-width: 90%;
+        padding: 1.5rem;
+        margin-top: 3rem; /* Maior margem superior */
+        padding-left: 1.5rem; /* Padding à esquerda para centralizar melhor */
+    }
+    .achievement-card {
+        padding: 15px;
+        font-size: 1rem;
+        height:217px;
+        
+    }
+}
+/* Responsividade */
+
+/* Para telas menores */
+@media (max-width: 768px) {
+    .profile-container {
+        max-width: 90%;
+        padding: 1.5rem;
+        margin-top: 3rem; /* Maior margem superior */
+        padding-left: 1.5rem; /* Padding à esquerda para centralizar melhor */
+    }
+
+
+    .d-flex {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-btn {
+        width: 100%;
+        margin: 10px 16px; /* Alinha o botão ao centro e adiciona margem inferior */
+    }
+
+    .profile-info {
+        text-align: center;
+    }
+
+    .row.text-center .col-md-4 {
+        width: 100%;
+    }
+}
+
+/* Para telas muito pequenas (celulares) */
+@media (max-width: 576px) {
+    .profile-container {
+        
+        max-width: 95%;
+        padding: 1rem;
+        margin-left:4px;
+        margin-top: 265px; /* Margem superior ainda maior para centralização */
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .profile-image {
+        width: 150px;
+        height: 150px;
+    }
+
+    .profile-name {
+        font-size: 28px;
+    }
+
+    .profile-title {
+        font-size: 18px;
+    }
+
+    .profile-info h5, .profile-info p {
+        font-size: 20px;
+    }
+
+    .achievement-card {
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+    .profile-btn {
+        width: 100%;
+        margin: 10px 16px; /* Alinha o botão ao centro e adiciona margem inferior */
+    }
+
+    .d-flex {
+        align-items: center;
+    }
+}
+
+@media (max-width: 576px) and (max-height: 900px) {
+    .profile-container {
+        max-width: 95%;
+        padding: 1rem; /* Centraliza o container horizontalmente */
+        margin-top: 480px; /* Margem superior ajustada para telas menores */
+        margin-right:5px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .profile-image {
+        width: 120px; /* Reduz um pouco o tamanho da imagem em telas pequenas */
+        height: 120px;
+    }
+
+    .profile-name {
+        font-size: 24px;
+    }
+
+    .profile-title {
+        font-size: 16px;
+    }
+
+    .profile-info h5, .profile-info p {
+        font-size: 18px;
+    }
+
+    .achievement-card {
+        padding: 15px;
+        font-size: 0.85rem;
+    }
+
+    .profile-btn {
+        width: 100%;
+        margin: 10px 15px; /* Alinha o botão ao centro e adiciona margem inferior */
+    }
+
+    .d-flex {
+        align-items: center;
+    }
+}
+
+/* Ajustes adicionais para telas menores com maior altura */
+@media (max-width: 576px) and (min-height: 700px) {
+    .profile-container {
+        max-width: 95%;
+        padding: 1rem;
+        margin: 0 auto;
+        margin-top: 400px; /* Ajusta a margem superior para telas mais altas */
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .profile-btn {
+        width: 100%;
+        margin: 10px 15px; /* Alinha o botão ao centro e adiciona margem inferior */
+    }
+}
+

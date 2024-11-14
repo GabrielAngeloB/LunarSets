@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/trocar_senha.css') }}">
+<title>Trocar Senha</title>
+
+<div class="container password-container">
+    <h2 class="password-title">Trocar Senha</h2>
+    <hr class="my-4">
+
+    <form method="POST" action="{{ url_for('trocar_senha') }}">
+        <div class="row password-info">
+            <div class="col-md-12 mb-3">
+                <h5>Senha Atual:</h5>
+                <input type="password" class="form-control" name="senha_atual" id="senhaAtual" placeholder="Digite sua senha atual" minlength="8" required>
+            </div>
+            <div class="col-md-12 mb-3">
+                <h5>Nova Senha:</h5>
+                <input type="password" class="form-control" name="nova_senha" id="novaSenha" placeholder="Digite sua nova senha" minlength="8" required>
+            </div>
+            <div class="col-md-12 mb-3">
+                <h5>Confirme a Nova Senha:</h5>
+                <input type="password" class="form-control" name="confirmar_senha" id="confirmarSenha" placeholder="Confirme sua nova senha" minlength="8" required>
+                <span class="text-danger error-message" id="confirmarSenhaError" style="display: none;">As senhas não coincidem.</span>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            <button type="button" class="btn btn-success password-btn" id="saveButton" disabled>
+                <i class="fas fa-save animated-icon"></i> Salvar Nova Senha
+            </button>
+            <button type="button" class="btn btn-secondary ms-3 password-btn" onclick="location.reload(true)">
+                <i class="fas fa-undo animated-icon"></i> Cancelar
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const senhaAtual = document.getElementById('senhaAtual');
+    const novaSenha = document.getElementById('novaSenha');
+    const confirmarSenha = document.getElementById('confirmarSenha');
+    const saveButton = document.getElementById('saveButton');
+    const confirmarSenhaError = document.getElementById('confirmarSenhaError');
+
+    function validateField(input) {
+        const minLength = input.getAttribute('minlength');
+        const valueLength = input.value.length;
+
+        if (valueLength >= minLength) {
+            input.classList.add('border-valid');
+            input.classList.remove('border-invalid');
+        } else {
+            input.classList.add('border-invalid');
+            input.classList.remove('border-valid');
+        }
+    }
+
+    function checkPasswordMatch() {
+        if (novaSenha.value && confirmarSenha.value && novaSenha.value === confirmarSenha.value) {
+            confirmarSenha.classList.add('border-valid');
+            confirmarSenha.classList.remove('border-invalid');
+            confirmarSenhaError.style.display = 'none'; // Esconde a mensagem de erro
+        } else {
+            confirmarSenha.classList.add('border-invalid');
+            confirmarSenha.classList.remove('border-valid');
+            confirmarSenhaError.style.display = 'block'; // Mostra a mensagem de erro
+        }
+    }
+
+    function toggleSaveButton() {
+        if (senhaAtual.value.length >= 8 &&
+            novaSenha.value.length >= 8 &&
+            confirmarSenha.value.length >= 8 &&
+            novaSenha.value === confirmarSenha.value) {
+            saveButton.disabled = false;
+        } else {
+            saveButton.disabled = true;
+        }
+    }
+
+    senhaAtual.addEventListener('input', () => {
+        validateField(senhaAtual);
+        toggleSaveButton();
+    });
+
+    novaSenha.addEventListener('input', () => {
+        validateField(novaSenha);
+        checkPasswordMatch();
+        toggleSaveButton();
+    });
+
+    confirmarSenha.addEventListener('input', () => {
+        validateField(confirmarSenha);
+        checkPasswordMatch();
+        toggleSaveButton();
+    });
+
+    saveButton.addEventListener('click', function() {
+        if (!senhaAtual.value) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atenção',
+                text: 'Por favor, insira sua senha atual.',
+                showConfirmButton: true
+            });
+            return;
+        }
+        
+        if (novaSenha.value !== confirmarSenha.value) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'As novas senhas não coincidem.',
+                showConfirmButton: true
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: "Tem certeza?",
+            text: "Você está prestes a salvar a nova senha!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#67c29c",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sim, salvar!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.querySelector("form").submit();
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

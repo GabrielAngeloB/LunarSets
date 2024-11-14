@@ -1,0 +1,48 @@
+body {
+    background-image: url(/static/img/fundo/insana.jpg);
+    color: whitesmoke;
+    padding-top: 10px;
+}
+
+.password-container {
+    max-width: 650px;
+    margin: 50px auto;
+    background-color: rgb(31, 30, 30);
+    border-radius: 15px;
+    box-shadow: 0px 0px 15px rgba(78, 1, 85, 0.6);
+    padding: 30px;
+    text-align: center;
+}
+
+h2.password-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 15px rgba(255, 255, 255, 0.6);
+}
+
+.form-control {
+    color: #6c757d;
+}
+
+.password-btn {
+    font-size: 16px;
+    padding: 12px 25px;
+    margin-top: 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.password-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Estilos de borda para validação */
+.border-valid {
+    border: 2px solid green;
+}
+
+.border-invalid {
+    border: 2px solid red;
+}
