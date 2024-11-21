@@ -1,0 +1,395 @@
+
+.custom-hover-btn {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.custom-hover-btn:hover {
+    background-color: black !important;
+    color: white !important;
+}
+
+.ajustar {
+    width: 80%;
+}
+
+@media (max-width: 1200px) {
+    .ajustar {
+        width: 60%;
+    }
+}
+
+@media (max-width: 992px) {
+    .ajustar {
+        width: 70%;
+    }
+}
+
+@media (max-width: 768px) {
+    .ajustar {
+        width: 80%;
+    }
+}
+
+@media (max-width: 576px) {
+    .ajustar {
+        width: 90%;
+    }
+}
+
+@media (max-width: 400px) {
+    .ajustar {
+        width: 100%;
+    }
+}
+
+/* Centralizar e estilizar a seção de comentários */
+.comment-section-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    padding-left:15px;
+    padding-right:15px;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.divider {
+    width: 100%;
+    max-width: 950px;
+    border-top: 2px solid #fff;
+    margin: 25px auto;
+}
+
+.comment-section {
+    width: 100%;
+    max-width: 1000px;
+    background-color: #2b2b2b;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.comment {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #444;
+}
+
+.comment:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #666;
+    background-size: cover;
+    background-position: center;
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-name {
+    font-weight: bold;
+    color: #f1f1f1;
+}
+
+.comment-date {
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+    .comment-text {
+    margin-top: 8px;
+    font-size: 1em;
+    line-height: 1.4;
+    color: #ddd;
+    word-wrap: break-word; /* Quebra palavras longas */
+    word-break: break-word; /* Quebra palavras longas */
+    white-space: normal;    /* Permite que o texto quebre em várias linhas */
+    text-align: justify;
+    text-justify: inter-word;
+    }
+
+.comment-actions {
+    display: flex;  /* Alinha os botões na mesma linha */
+    gap: 10px;
+    margin-top: 10px;
+}
+
+    .btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1em; /* Aumentado o tamanho da fonte */
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease, font-size 0.3s ease; /* Adicionei transição também para a cor e tamanho */
+    }
+
+    .btn-edit {
+        background-color: #5cb85c;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-edit:hover {
+        background-color: #4cae4c;
+        font-size: 1.05em; /* Aumenta levemente o texto ao passar o mouse */
+    }
+
+    .btn-delete {
+        background-color: #d9534f;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-delete:hover {
+        background-color: #c9302c;
+        font-size: 1.05em; /* Aumenta levemente o texto ao passar o mouse */
+    }
+
+/* Responsivo */
+@media (max-width: 480px) {
+    .comment {
+        flex-direction: column;
+    }
+
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+    }
+}
+    .comment-box {
+        width: 100%;
+        max-width: 1100px;
+        background-color: #2b2b2b;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .comment-box input,
+    .comment-box textarea {
+        width: 100%;
+        padding: 10px;
+        background-color: #3b3b3b;
+        border: 1px solid #555;
+        border-radius: 5px;
+        color: #ddd;
+        font-size: 1em;
+        transition: border-color 0.3s ease;
+    }
+
+    .comment-box input:focus,
+    .comment-box textarea:focus {
+        border-color: #6c757d;
+        outline: none;
+    }
+
+    .comment-box textarea {
+        resize: vertical;
+        min-height: 80px;
+        max-height: 200px;
+    }
+
+    .comment-box .btn-submit {
+        width: 100%;
+        padding: 10px;
+        background-color: #5cb85c;
+        color: white;
+        font-size: 1em;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .comment-box .btn-submit:hover {
+        background-color: #4cae4c;
+    }
+    .no-comments {
+        text-align: center;
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px  #555; /* Cinza escuro para combinar com o tema */
+        border-radius: 8px;
+        background-color: #2b2b2b; /* Cor de fundo escura */
+        color: #ddd; /* Cor de texto suave */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Sombra sutil */
+        animation: fadeIn 0.8s ease;
+    }
+
+    .no-comments h2 {
+        color: #f1f1f1; /* Texto mais claro */
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+
+    .no-comments p {
+        color: #bbb; /* Texto suave */
+        font-size: 1.1rem;
+        margin-top: 5px;
+    }
+
+    .custom-select {
+        background-color: #3b3b3b;
+        color: #ddd;
+        border: 1px solid #555;
+        border-radius: 5px;
+        padding: 10px;
+        transition: border-color 0.3s ease;
+    }
+    
+    .custom-select:focus {
+        border-color: #6c757d;
+        outline: none;
+    }
+    
+    .custom-select option {
+        background-color: #3b3b3b;
+        color: #ddd;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 500px; /* Cartão maior */
+        background-color: #2b2b2b;
+        color: #ddd;
+        border-radius: 15px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin: 30px auto;
+        padding-bottom: 30px; /* Maior padding no fundo */
+        height:90%;
+    }
+    
+    .card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .card img {
+        width: 80%;
+        height: 200px; /* Altura maior para imagem */
+        object-fit: cover;
+    }
+    
+    .card-content {
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .card-title {
+        font-size: 2rem; /* Título maior */
+        font-weight: bold;
+        color: #f1f1f1;
+        margin-bottom: 15px;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.3), 0 0 15px rgba(255, 255, 255, 0.5);
+    }
+    
+    .card-details {
+        text-align: left; /* Alinha os detalhes à esquerda */
+        margin-bottom: 20px;
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #bbb;
+        text-align:justify;
+    }
+    
+    .card-details span {
+        font-weight: bold;
+        color: #f1f1f1;
+        text-align:justify;
+    }
+    
+    .card-actions {
+        margin-top: 20px;
+    }
+    
+    .card-actions .btn {
+        padding: 12px 24px; /* Botão maior */
+        background-color: #5cb85c;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    
+    .card-actions .btn:hover {
+        background-color: #4cae4c;
+        transform: scale(1.05);
+    }
+    
+    /* Responsivo */
+    @media (max-width: 576px) {
+        .card {
+            max-width: 95%;
+        }
+    
+        .card img {
+            height: 200px; /* Reduz altura em telas menores */
+        }
+    }
+/* Estilo do throbber de carregamento */
+#loading {
+    display: none; /* Inicialmente escondido */
+    position: fixed; /* Fixa o loader na tela */
+    top: 0; /* Fica no topo da tela */
+    left: 0; /* Fica alinhado à esquerda */
+    width: 100vw; /* Ocupa toda a largura da tela */
+    height: 100vh; /* Ocupa toda a altura da tela */
+    background-color: rgba(0, 0, 0, 0.3); /* Fundo semitransparente */
+    justify-content: center; /* Centraliza o conteúdo horizontalmente */
+    align-items: center; /* Centraliza o conteúdo verticalmente */
+    z-index: 9999; /* Garante que o loader fique acima de tudo */
+    display: flex; /* Necessário para centralizar */
+}
+
+/* Estilo do loader */
+.loader {
+    border: 8px solid transparent; /* Cor da borda do loader */
+    border-top: 8px solid #3498db; /* Cor do topo (azul) */
+    border-radius: 50%; /* Torna o loader redondo */
+    width: 80px; /* Tamanho do loader */
+    height: 80px; /* Tamanho do loader */
+    animation: spin 1.5s linear infinite; /* Animação de rotação */
+}
+
+/* Animação do girar (spin) */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

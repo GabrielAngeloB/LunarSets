@@ -127,6 +127,51 @@ class Conquistas:
             finally:
                 cursor.close()
                 close_connection(conn)
+
+        if numconquista == 7:
+            try:
+                sql = "INSERT INTO conquistas (nome_conquista, descricao_conquista, id_usuario) VALUES (%s, %s, %s)"
+                valores = ("O ZOÓLOGO", "Você viu os dados de um animal pela primeira vez!", session['id_usuario'],)
+                cursor.execute(sql, valores)
+                conn.commit()
+                flash("Nova conquista! 'O ZOÓLOGO', Veja seu perfil.", 'success')
+                print("Conquista enviada!")
+            except Exception as er:
+                print(er)
+            finally:
+                cursor.close()
+                close_connection(conn)
+
+
+
+        if numconquista == 8:
+            try:
+                sql = "INSERT INTO conquistas (nome_conquista, descricao_conquista, id_usuario) VALUES (%s, %s, %s)"
+                valores = ("O MÍMICO", "Você comparou duas fotos pela primeira vez!", session['id_usuario'],)
+                cursor.execute(sql, valores)
+                conn.commit()
+                flash("Nova conquista! 'O MÍMICO', Veja seu perfil.", 'success')
+                print("Conquista enviada!")
+            except Exception as er:
+                print(er)
+            finally:
+                cursor.close()
+                close_connection(conn)
+        if numconquista == 9:
+            try:
+                sql = "INSERT INTO conquistas (nome_conquista, descricao_conquista, id_usuario) VALUES (%s, %s, %s)"
+                valores = ("O DETETIVE", "Você verificou as emoções de alguém pela primeira vez!", session['id_usuario'],)
+                cursor.execute(sql, valores)
+                conn.commit()
+                flash("Nova conquista! 'O DETETIVE', Veja seu perfil.", 'success')
+                print("Conquista enviada!")
+            except Exception as er:
+                print(er)
+            finally:
+                cursor.close()
+                close_connection(conn)
+
+            
                 
 
 

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+<title>Animais Aleatórios</title>
+<script src="{{ url_for('static', filename='js/ferramentas.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dados_animais.css') }}">
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
+
+<script>
+    const socket = io("http://179.255.166.132:8000");
+    
+    socket.on("connect", () => {
+        console.log("Conectado ao servidor!");
+        socket.emit("data_animal");
+    });
+    
+    socket.on("update_animal_data", (data) => {
+        console.log("Dados recebidos:", data);
+    
+        // Ocultar o loader
+        document.getElementById("loading").style.display = "none";
+    
+        // Verifica se os dados do animal são válidos
+        if (data && data.common_name && data.scientific_name && data.description) {
+            // Exibe os dados no card
+            document.getElementById("common-name").innerText = data.common_name;
+            document.getElementById("scientific-name").innerText = data.scientific_name;
+            document.getElementById("description").innerText = data.description;
+            document.getElementById("native-range").innerText = data.native_range;
+            document.getElementById("iucn-status").innerText = data.iucn_status;
+            document.getElementById("animal-image").src = data.image_url;
+        } else {
+            // Caso não encontre o animal, tenta novamente após 2 segundos
+            console.log("Animal não encontrado, tentando novamente...");
+            setTimeout(() => {
+                socket.emit("data_animal");
+            }, 2000); // Tenta novamente após 2 segundos
+        }
+    });
+
+    
+    </script>
+
+<body>
+
+    <div id="loading" style="display:flex;">
+        <div class="loader"></div>
+    </div>
+    <h1 class="text-center mb-2 mt-2" style="font-weight:bold; color:white; text-shadow: 0 0 8px rgba(255, 255, 255, 0.3), 0 0 15px rgba(255, 255, 255, 0.6);">Animais Aleatórios!</h1>
+
+    <div class="card">
+        <img src="https://i.pinimg.com/originals/97/e9/42/97e942ce7fc4e9d4ea6d844a382f251f.gif" id="animal-image" style="object-fit:fill; width:100%; height:330px;" alt="Imagem do cartão">
+        <div class="card-content">
+            <h2 class="card-title" id="common-name">Carregando...</h2>
+            <div class="card-details" style="text-align:justify;">
+                <p><strong>Nome científico:</strong> <span id="scientific-name">Carregando..</span><strong>.</strong></p>
+                <p><strong>Descrição:</strong> <span id="description" style="text-align: justify;">Carregando...</span></p>
+                <p><strong>Faixa de distribuição:</strong> <span id="native-range">Carregando..</span><strong>.</strong></p>
+                <p><strong>Status IUCN:</strong> <span id="iucn-status">Carregando..</span><strong>.</strong></p>
+
+            </div>
+            <div class="card-actions">
+                <button class="btn" onclick="document.getElementById('loading').style.display = 'flex'; socket.emit('data_animal'); socket.on('update_animal_data', (data)); ">Próximo</button>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Divisão entre o conversor e os comentários -->
+    <div class="divider"></div>
+
+    <div class="comment-section-container">
+        <form action="{{ url_for('animais_aleatorio') }}" method="POST" class="comment-box">
+            <textarea name="comentario" placeholder="Escreva seu comentário aqui..." id="user-comment" required></textarea>
+            <button type="submit" class="btn-submit">Publicar Comentário</button>
+        </form>
+    </div>
+    
+
+    {% if comentario %}
+    <div class="comment-section-container" style="padding-bottom:30px;">
+        <div class="comment-section">
+            {% for comentario in comentario %}
+            <div class="comment" id="comment-{{ comentario.id_comentario }}">
+                <div class="user-avatar">
+                    <img src="{{ url_for('static', filename=usuario.img_perfil) }}" style="width:50px; height:50px; border-radius:50%;" alt="Profile">
+                </div>
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="user-name">{{ comentario.nome_usuario }}</span>
+                        <span class="comment-date">{{ comentario.data_comentario }} às {{ comentario.hora_comentario }}</span>
+                    </div>
+    
+                    <!-- Texto do comentário -->
+                    <p class="comment-text" id="text-{{ comentario.id_comentario }}">{{ comentario.comentario_texto }}</p>
+    
+                    <!-- Campo de entrada para editar comentário (inicialmente oculto) -->
+                    <input type="text" class="comment-edit-input" id="input-{{ comentario.id_comentario }}" value="{{ comentario.comentario_texto }}" style="display: none;">
+    
+                    {% if session['id_usuario'] == comentario.id_usuario %}
+                    <div class="comment-actions">
+                        <!-- Botão para alternar entre modo de edição e visualização -->
+                        <button class="btn btn-edit" onclick="enableEditMode({{ comentario.id_comentario }})">Editar</button>
+                        
+                        <!-- Botão de salvar (inicialmente oculto) -->
+                        <button class="btn btn-edit" id="save-{{ comentario.id_comentario }}" onclick="saveEdit({{ comentario.id_comentario }})" style="display: none;">Salvar</button>
+                        
+                        <!-- Botão de excluir -->
+                        <form action="{{ url_for('deletar_comentario', comentario_id=comentario.id_comentario, next=request.path) }}" method="POST" style="display:inline;">
+                            <button type="button" class="btn btn-delete" onclick="deletarComentario(event, {{ comentario.id_comentario }})">Excluir</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <div style="padding-bottom:40px; padding-right:10%; padding-left: 10%; ">
+        <div class="no-comments">
+            <h2>Sem comentários atualmente</h2>
+            <p>Seja o primeiro a compartilhar sua opinião!</p>
+        </div>
+    </div>
+
+
+{% endif %}
+{% endblock %}

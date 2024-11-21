@@ -92,3 +92,12 @@
                 max-width: 300px;
             }
         }
+        /* Reduz o tamanho do card e da imagem para telas médias */
+        @media (max-width: 1900px) {
+            .custom-card {
+                max-width: 750px;
+            }
+            .custom-card .card-img-top {
+                max-width: 750px;
+            }
+        }

@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+{% block content %}
+<title>Análise de Emoções</title>
+<script src="{{ url_for('static', filename='js/ferramentas.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/analise_emocao.css') }}">
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
+
+
+
+<script>
+     const socket = io("http://179.255.166.132:8000", {
+                transports: ["websocket", "polling"], // Negociação de transporte
+            });
+            
+           
+            socket.on("connect", () => {
+                console.log("Conectado ao servidor!");
+            });
+</script>
+<body>
+
+    
+    <div id="loading" style="display:none;">
+        <div class="loader"></div>
+    </div>
+
+    <div class="container mt-5" style="margin: auto;">
+        <h1 class="text-center mb-4" style="font-weight:bold; color:white; text-shadow: 0 0 8px rgba(255, 255, 255, 0.3), 0 0 15px rgba(255, 255, 255, 0.6);">Análise de Emoções</h1>
+        <form id="dataForm" class="p-4 bg-dark rounded shadow ajustar mx-auto" style="color:white;">
+            <div class="form-group">
+                <label for="img1" class="form-label">Escolha a imagem:</label>
+                <input type="file" class="form-control" id="img1" name="img1" accept=".jpg, .jpeg, .png" required>
+            </div>
+            <p></p>
+            <button type="button" id="sendButton"  class="btn btn-primary w-100 custom-hover-btn" style="margin-top:10px; background-color:gainsboro; color:black; font-size:15px; font-weight:bold; text-shadow: 0 0 8px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 0, 0, 0.3);" onclick="document.getElementById('loading').style.display = 'flex';">
+                Enviar Imagem
+            </button>
+        </form>
+
+
+                <div class="row mt-3 g-4" id="imagemSelecionado">
+                    <div class="col-md-10" style="margin:auto;">
+                        <div class="card bg-dark text-light shadow-lg">
+                            <div class="card-header bg-gradient-primary text-white">
+                                <h5 class="card-title mb-0">Imagem Selecionada</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center align-items-center">
+                                <img id="image1-display" src="" alt="Imagem" class="img-fluid rounded shadow" style="max-width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="row">
+                        <!-- Card de Emoção -->
+                        <div class="col-md-6 mt-3" id="emocoes" style="display:none">
+                            <div class="card bg-dark text-light shadow-lg">
+                                <div class="card-header bg-gradient-success text-white">
+                                    <h5 class="card-title mb-0">Análise Emocional</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p><strong>Emoção Dominante:</strong> <span id="emocao-dominante">-</span></p>
+                                        </div>
+                                        <div class="col-6">
+                                            <p><strong>Confiança da Análise:</strong> <span id="rosto-confianca">-</span></p>
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                            <div class="progress-container">
+                                                <!-- Raiva -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Raiva</span>
+                                                    <span id="emocao-raiva">-</span>
+                                                </small>
+                                                <div class="progress">
+                                                    <div id="emotion-angry-progress" class="progress-bar" style="background-color: #FF5733; width: 0.51%;"></div>
+                                                </div>
+                    
+                                                <!-- Felicidade -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Felicidade</span>
+                                                    <span id="emocao-feliz">-</span>
+                                                </small>
+                                                <div class="progress mt-2">
+                                                    <div id="emotion-happy-progress" class="progress-bar" style="background-color: #28A745; width: 99.55%;"></div>
+                                                </div>
+                    
+                                                <!-- Medo -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Medo</span>
+                                                    <span id="emocao-medo">-</span>
+                                                </small>
+                                                <div class="progress mt-2">
+                                                    <div id="emotion-fear-progress" class="progress-bar" style="background-color: #FFC107; width: 1.55%;"></div>
+                                                </div>
+                    
+                                                <!-- Tristeza -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Tristeza</span>
+                                                    <span id="emocao-tristeza">-</span>
+                                                </small>
+                                                <div class="progress mt-2">
+                                                    <div id="emotion-sad-progress" class="progress-bar" style="background-color: #3498DB; width: 0.10%;"></div>
+                                                </div>
+                    
+                                                <!-- Nojo -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Nojo</span>
+                                                    <span id="emocao-nojo">-</span>
+                                                </small>
+                                                <div class="progress mt-2">
+                                                    <div id="emotion-disgust-progress" class="progress-bar" style="background-color: #6F42C1; width: 0.00%;"></div>
+                                                </div>
+                    
+                                                <!-- Surpresa -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Surpresa</span>
+                                                    <span id="emocao-surpresa">-</span>
+                                                </small>
+                                                <div class="progress mt-2">
+                                                    <div id="emotion-surprise-progress" class="progress-bar" style="background-color: #17A2B8; width: 0.35%;"></div>
+                                                </div>
+                    
+                                                <!-- Neutro -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Neutro</span>
+                                                    <span id="emocao-neutro">-</span>
+                                                </small>
+                                                <div class="progress mt-2">
+                                                    <div id="emotion-neutral-progress" class="progress-bar" style="background-color: #95A5A6; width: 0.43%;"></div>
+                                                </div>
+                    
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Card de Raça -->
+                        <div class="col-md-6 mt-3" id="racas" style="display:none; margin:auto;">
+                            <div class="card bg-dark text-light shadow-lg">
+                                <div class="card-header bg-gradient-success text-white">
+                                    <h5 class="card-title mb-0">Análise Racial</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p><strong>Raça Dominante:</strong> <span id="raca-dominante">Branco</span></p>
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                            <div class="progress-container">
+                                                <!-- Asiático -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Asiático</span>
+                                                    <span id="raca-asiatica">-</span>
+                                                </small>
+                                                <div class="progress">
+                                                    <div id="race-asian-progress" class="progress-bar" style="background-color: #FF6F61; width: 49.24%;"></div>
+                                                </div>
+                    
+                                                <!-- Indiano -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Indiano</span>
+                                                    <span id="raca-indiana">-</span>
+                                                </small>
+                                                <div class="progress mt-2">
+                                                    <div id="race-indian-progress" class="progress-bar" style="background-color: #FF9F43; width: 44.54%;"></div>
+                                                </div>
+                    
+                                                <!-- Negro -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Negro</span>
+                                                    <span id="raca-negra">-</span>
+                                                </small>
+                                                <div class="progress mt-2">
+                                                    <div id="race-black-progress" class="progress-bar" style="background-color: #6C757D; width: 30.55%;"></div>
+                                                </div>
+                    
+                                                <!-- Branco -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Branco</span>
+                                                    <span id="raca-branca">-</span>
+                                                </small>
+                                                <div class="progress mt-2">
+                                                    <div id="race-white-progress" class="progress-bar" style="background-color: #F8C471; width: 76.13%;"></div>
+                                                </div>
+                    
+                                                <!-- Oriente Médio -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Oriente Médio</span>
+                                                    <span id="raca-oriente-medio">-</span>
+                                                </small>
+                                                <div class="progress mt-2">
+                                                    <div id="race-middle-eastern-progress" class="progress-bar" style="background-color: #DC7633; width: 9.40%;"></div>
+                                                </div>
+                    
+                                                <!-- Latina -->
+                                                <small class="d-flex justify-content-between">
+                                                    <span>Latina</span>
+                                                    <span id="raca-latina">-</span>
+                                                </small>
+                                                <div class="progress mt-2">
+                                                    <div id="race-latino-progress" class="progress-bar" style="background-color: #1ABC9C; width: 13.23%;"></div>
+                                                </div>
+                    
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                            
+
+
+                </div>
+            </div>
+            
+
+
+        <script>
+           
+            
+            
+            const sendButton = document.getElementById('sendButton');
+            
+           
+            sendButton.addEventListener('click', function (event) {
+                event.preventDefault(); 
+                
+            
+                
+                const img1 = document.getElementById('img1').files[0];
+            
+                if (img1) {
+
+                    const dados = {};
+                    const leitor1 = new FileReader();
+            
+
+                    leitor1.onload = function () {
+                        dados.img1 = {
+                            filename: img1.name,
+                            filetype: img1.type,
+                            content: leitor1.result.split(',')[1] 
+                        };
+
+                            socket.emit('dados_analise', dados); 
+            
+                    };
+            
+                    leitor1.readAsDataURL(img1); 
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: 'Adicione a imagem antes de enviar!.',
+                        showConfirmButton: true
+                    });
+                    return;
+                }
+            });
+
+            
+            // Escuta a resposta do servidor
+            socket.on('dados_analise', (response) => {
+    console.log("Resposta do servidor:", response);
+
+    // Verifica se há um erro na resposta
+    if (response.erro) {
+        document.getElementById("loading").style.display = "none";
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro!',
+            text: response.erro,  // A mensagem de erro que vem do servidor
+            confirmButtonText: 'Fechar'
+        });
+    } else if (response.resultado) {
+        // Verifica se 'resultado' existe
+        const raiva = response.resultado.emotion["angry"];
+        const felicidade = response.resultado.emotion["happy"];
+        const medo = response.resultado.emotion["fear"];
+        const tristeza = response.resultado.emotion["sad"];
+        const nojo = response.resultado.emotion["disgust"];
+        const surpresa = response.resultado.emotion["surprise"];
+        const neutro = response.resultado.emotion["neutral"];
+        const emocao_dominante = response.resultado["dominant_emotion"];
+        const confiança = response.resultado["face_confidence"] * 100;
+        const asiatico = response.resultado.race["asian"];
+        const indiano = response.resultado.race["indian"];
+        const negro = response.resultado.race["black"];
+        const branco = response.resultado.race["white"];
+        const latino_espanico = response.resultado.race["latino hispanic"];
+        const oriente_medio = response.resultado.race["middle eastern"];
+        const raca_dominante = response.resultado["dominant_race"];
+
+        // Dicionário para traduzir emoções e raças
+        const traducaoEmocoes = {
+            happy: "Felicidade",
+            angry: "Raiva",
+            sad: "Tristeza",
+            fear: "Medo",
+            disgust: "Nojo",
+            surprise: "Surpresa",
+            neutral: "Neutro"
+        };
+
+        const traducaoRacas = {
+            white: "Branco",
+            black: "Negro",
+            asian: "Asiático",
+            indian: "Indiano",
+            "middle eastern": "Oriente Médio",
+            latino: "Latino"
+        };
+
+        const emocaoTraduzida = traducaoEmocoes[emocao_dominante] || "Desconhecida";
+        const racaTraduzida = traducaoRacas[raca_dominante] || "Desconhecida";
+
+        document.getElementById('emocao-raiva').innerText = `${raiva.toFixed(2)}%`;
+        document.getElementById('emocao-feliz').innerText = `${felicidade.toFixed(2)}%`;
+        document.getElementById('emocao-medo').innerText = `${medo.toFixed(2)}%`;
+        document.getElementById('emocao-nojo').innerText = `${nojo.toFixed(2)}%`;
+        document.getElementById('emocao-tristeza').innerText = `${tristeza.toFixed(2)}%`;
+        document.getElementById('emocao-surpresa').innerText = `${surpresa.toFixed(2)}%`;
+        document.getElementById('emocao-neutro').innerText = `${neutro.toFixed(2)}%`;
+
+        document.getElementById('emocao-dominante').innerText = `${emocaoTraduzida}`;
+        document.getElementById('rosto-confianca').innerText = `${confiança.toFixed(2)}%`;
+
+        document.getElementById('raca-asiatica').innerText = `${asiatico.toFixed(2)}%`;
+        document.getElementById('raca-indiana').innerText = `${indiano.toFixed(2)}%`;
+        document.getElementById('raca-negra').innerText = `${negro.toFixed(2)}%`;
+        document.getElementById('raca-branca').innerText = `${branco.toFixed(2)}%`;
+        document.getElementById('raca-oriente-medio').innerText = `${oriente_medio.toFixed(2)}%`;
+        document.getElementById('raca-latina').innerText = `${latino_espanico.toFixed(2)}%`;
+        document.getElementById('raca-dominante').innerText = `${racaTraduzida}`;
+
+        // Barra de progresso das emoções
+        document.getElementById('emotion-angry-progress').style.width = `${raiva}%`;
+        document.getElementById('emotion-happy-progress').style.width = `${felicidade}%`;
+        document.getElementById('emotion-fear-progress').style.width = `${medo}%`;
+        document.getElementById('emotion-sad-progress').style.width = `${tristeza}%`;
+        document.getElementById('emotion-disgust-progress').style.width = `${nojo}%`;
+        document.getElementById('emotion-surprise-progress').style.width = `${surpresa}%`;
+        document.getElementById('emotion-neutral-progress').style.width = `${neutro}%`;
+
+        // Barra de progresso das raças
+        document.getElementById('race-asian-progress').style.width = `${asiatico}%`;
+        document.getElementById('race-indian-progress').style.width = `${indiano}%`;
+        document.getElementById('race-black-progress').style.width = `${negro}%`;
+        document.getElementById('race-white-progress').style.width = `${branco}%`;
+        document.getElementById('race-middle-eastern-progress').style.width = `${oriente_medio}%`;
+        document.getElementById('race-latino-progress').style.width = `${latino_espanico}%`;
+
+        // Exibe os resultados
+        document.getElementById("emocoes").style.display = "block";
+        document.getElementById("racas").style.display = "block";
+        document.getElementById("loading").style.display = "none";
+
+
+                                                            
+
+                    
+                } else if (response.resultado.erro) {
+                    // Exibe o erro, caso as imagens não sejam enviadas corretamente
+                    alert(response.resultado.erro);
+                }
+            });
+
+
+                document.getElementById('img1').addEventListener('change', function (event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            document.getElementById('image1-display').src = e.target.result;
+                        }
+                        reader.readAsDataURL(file);
+
+                    }
+                });
+
+            </script>
+    
+
+    <!-- Divisão entre o conversor e os comentários -->
+    <div class="divider"></div>
+
+    <div class="comment-section-container">
+        <form action="{{ url_for('analise_emocao') }}" method="POST" class="comment-box">
+            <textarea name="comentario" placeholder="Escreva seu comentário aqui..." id="user-comment" required></textarea>
+            <button type="submit" class="btn-submit">Publicar Comentário</button>
+        </form>
+    </div>
+
+
+
+
+    
+
+    {% if comentario %}
+    <div class="comment-section-container" style="padding-bottom:30px;">
+        <div class="comment-section">
+            {% for comentario in comentario %}
+            <div class="comment" id="comment-{{ comentario.id_comentario }}">
+                <div class="user-avatar">
+                    <img src="{{ url_for('static', filename=usuario.img_perfil) }}" style="width:50px; height:50px; border-radius:50%;" alt="Profile">
+                </div>
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="user-name">{{ comentario.nome_usuario }}</span>
+                        <span class="comment-date">{{ comentario.data_comentario }} às {{ comentario.hora_comentario }}</span>
+                    </div>
+    
+                    <!-- Texto do comentário -->
+                    <p class="comment-text" id="text-{{ comentario.id_comentario }}">{{ comentario.comentario_texto }}</p>
+    
+                    <!-- Campo de entrada para editar comentário (inicialmente oculto) -->
+                    <input type="text" class="comment-edit-input" id="input-{{ comentario.id_comentario }}" value="{{ comentario.comentario_texto }}" style="display: none;">
+    
+                    {% if session['id_usuario'] == comentario.id_usuario %}
+                    <div class="comment-actions">
+                        <!-- Botão para alternar entre modo de edição e visualização -->
+                        <button class="btn btn-edit" onclick="enableEditMode({{ comentario.id_comentario }})">Editar</button>
+                        
+                        <!-- Botão de salvar (inicialmente oculto) -->
+                        <button class="btn btn-edit" id="save-{{ comentario.id_comentario }}" onclick="saveEdit({{ comentario.id_comentario }})" style="display: none;">Salvar</button>
+                        
+                        <!-- Botão de excluir -->
+                        <form action="{{ url_for('deletar_comentario', comentario_id=comentario.id_comentario, next=request.path) }}" method="POST" style="display:inline;">
+                            <button type="button" class="btn btn-delete" onclick="deletarComentario(event, {{ comentario.id_comentario }})">Excluir</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <div style="padding-bottom:40px; padding-right:10%; padding-left: 10%; ">
+        <div class="no-comments">
+            <h2>Sem comentários atualmente</h2>
+            <p>Seja o primeiro a compartilhar sua opinião!</p>
+        </div>
+    </div>
+{% endif %}
+
+
+    
+
+</div>
+</body>
+
+    
+</body>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-OgwmRWzUGE9VNw6aJfwdgnvwTbkKcwQzT5nlwGkE2riVVkJRLaXvBVbvTqQ8PwHd" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous" async></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous" defer></script>
+
+</html>

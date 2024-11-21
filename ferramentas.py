@@ -23,10 +23,23 @@ import subprocess
 import pythoncom
 from win32com import client as win32
 import glob
+import face_recognition
+import dlib
+import base64
+import numpy as np
+from io import BytesIO
+from PIL import Image
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+from deepface import DeepFace
+import tensorflow as tf
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+import tensorflow.compat.v1 as tf
+
 
 class Ferramenta:
     UPLOAD_FOLDER = 'static/img'
     UPLOAD_ARQUIVO = 'pasta_upload'
+    ARQUIVOS2_FOLDER = os.path.join(os.getcwd(), "static/uploads")
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     AUDIO_FOLDER = os.path.join(os.getcwd(), "audios")
     ARQUIVOS_FOLDER = os.path.join(os.getcwd(), "pasta_upload")
@@ -223,6 +236,15 @@ class Ferramenta:
                 
                 if agora - tempo_modificacao > tempo_limite:
                     os.remove(caminho_arquivo)
+
+        for arquivo in os.listdir(Ferramenta.ARQUIVOS2_FOLDER):
+            caminho_arquivo = os.path.join(Ferramenta.ARQUIVOS2_FOLDER, arquivo)
+
+            if os.path.isfile(caminho_arquivo):
+                tempo_modificacao = datetime.fromtimestamp(os.path.getmtime(caminho_arquivo))
+                
+                if agora - tempo_modificacao > tempo_limite:
+                    os.remove(caminho_arquivo)                    
                     
 
     
@@ -306,3 +328,51 @@ class Ferramenta:
             flash(f"Erro ao processar o arquivo: {str(e)}", "danger")
             print(f"Erro ao processar o arquivo: {str(e)}")  
             return None
+
+    @staticmethod
+    def calcular_similaridade(imagem1, imagem2):
+        imagem1 = face_recognition.load_image_file(imagem1)
+        imagem2 = face_recognition.load_image_file(imagem2)
+        
+
+        if not face_recognition.face_encodings(imagem1):
+            return "Não foi possível detectar um rosto na primeira imagem."
+        if not face_recognition.face_encodings(imagem2):
+            return "Não foi possível detectar um rosto na segunda imagem."
+
+        face1 = face_recognition.face_encodings(imagem1)[0]
+        face2 = face_recognition.face_encodings(imagem2)[0]
+
+        distancia = face_recognition.face_distance([face1], face2)[0]
+        similaridade = (1 - distancia) * 100
+
+        return f"{similaridade:.2f}%"
+    
+
+    
+    def reconhecer_emocao(img_caminho):
+        print(img_caminho)
+        img = Image.open(img_caminho)
+        nome_arquivo = os.path.basename(img.filename)
+        nome, extensao = os.path.splitext(nome_arquivo)
+        img = img.resize((400, 400))
+
+        img.save(f"pasta_upload/{session['nome_usuario']}{nome}_ajustado{extensao}")
+        try:
+            resultado = DeepFace.analyze(
+                img_path=f"pasta_upload/{session['nome_usuario']}{nome}_ajustado{extensao}", 
+                actions=["emotion", "race"],
+                detector_backend="mtcnn",
+                enforce_detection=True,
+                silent = True
+            )
+        except Exception as er:
+            print(er)
+            return False
+        if resultado:
+            if isinstance(resultado, list):
+                resultado = resultado[0]
+        else:
+            return False
+
+        return resultado

@@ -1,3 +1,6 @@
+from gevent import monkey
+monkey.patch_all()
+
 from flask import Flask, render_template, request, send_file, redirect, url_for, session, flash, send_from_directory
 from usuario import Usuario
 from conquistas import Conquistas
@@ -16,10 +19,24 @@ from dotenv import load_dotenv
 from db_connection import create_connection, close_connection   
 import time
 from datetime import timedelta
+from animais_dados import dadosAnimal, animal_names, iucn_portuguese, iucn_english
+from flask_socketio import SocketIO, emit
+import base64
+from gevent.pywsgi import WSGIServer
+from geventwebsocket.handler import WebSocketHandler
+import numpy as np
+from gtts import gTTS
+import yt_dlp
+import os
+
+
+
 
 
 
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="gevent")
+
 
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB
 emails = []
@@ -45,6 +62,10 @@ def pagina_nao_encontrada(error):
     return redirect(url_for('inicio'))
 
 
+    
+
+
+
 @app.route('/')
 def base():
     return render_template('index.html')
@@ -59,7 +80,7 @@ def inicio():
         flash("Você precisa estar logado para acessar esta página.", "danger")
         return redirect(url_for('logcad'))
         usuario = Usuario.buscarUsuario()
-    if usuario and usuario['email_usuario'] == 'gabridestiny@hotmail.com':
+    if usuario and session['email'] == 'gabridestiny@hotmail.com':
         Ferramenta.limpar_arquivos_antigos()
 
     return render_template('inicio.html', usuario=usuario, ferramenta = ferramenta)
@@ -73,6 +94,8 @@ def allowed_file(filename):
 
 @app.route('/adicionar_ferramenta', methods=['GET', 'POST'])
 def adicionar_ferramenta():
+    if session['email'] != "gabridestiny@hotmail.com":
+        return redirect(url_for("inicio"))
     if request.method == 'POST':
         nome_ferramenta = request.form['nome_ferramenta']
         nome_menor_ferramenta = request.form['nome_menor_ferramenta']  # Novo campo
@@ -85,6 +108,31 @@ def adicionar_ferramenta():
             return redirect(url_for('adicionar_ferramenta'))
     
     return render_template('adicionar_ferramenta.html')
+
+
+def info_animal():
+    random_animal = dadosAnimal.get_random_animal()  # Pega um animal aleatório
+    print(f"Buscando informações para o animal: {random_animal}")
+    animal_info = dadosAnimal.get_animal_data(random_animal)  # Obtém as informações
+    if not animal_info["iucn_status"]:
+        animal_info["iucn_status"] = "Não Disponível"
+    if animal_info == False:
+        return False
+
+
+    if animal_info and animal_info["iucn_status"] in iucn_portuguese or animal_info["iucn_status"] in iucn_english:
+        return animal_info  # Exibe as informações se encontrar o IUCN status válido
+    else:
+        return False  # Mensagem caso o status não seja encontrado
+
+@socketio.on("data_animal")
+def handle_data_animal():
+    data = info_animal()
+    while data == False:
+        data = info_animal()
+        time.sleep(1)
+    if data != False:
+        emit("update_animal_data", data)
 
 
 
@@ -239,8 +287,6 @@ def converter():
         print("finally do converter")
 
 
-
-
 @app.route('/logout')
 def logout():
     session.pop('id_usuario', None)
@@ -345,8 +391,9 @@ def deletar_comentario(comentario_id):
     return redirect(url_for('inicio'))
 
 
-@app.route('/comparador', methods=['GET', 'POST'])
-def comparador():
+@app.route('/animais_aleatorio', methods=['GET', 'POST'])
+def animais_aleatorio():
+    
     usuario = Usuario.buscarUsuario()
     if 'id_usuario' not in session:
         flash("Você precisa estar logado para acessar esta página.", "danger")
@@ -354,13 +401,267 @@ def comparador():
     if request.method == 'POST':
         comentario = request.form['comentario']
         Comentario.inserirComentario(comentario, 4)
-        return redirect(url_for('conversor'))
+        return redirect(url_for('animais_aleatorio'))
     comentario = Comentario.listarComentario(4)
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True, buffered=True)
+    sql = "SELECT COUNT(*) as total_conquistas from conquistas WHERE id_usuario = %s and nome_conquista = %s"
+    valores = (session['id_usuario'], "O ZOÓLOGO",)
+    cursor.execute(sql, valores)
+    conquistas = cursor.fetchone()
+    if conquistas['total_conquistas'] == 0:
+        Conquistas.conquista(7)
+    cursor.close()
+    close_connection(conn)
     
-    return render_template('comparador.html', usuario=usuario, comentario = comentario)
+    
+    return render_template('animais_aleatorio.html', usuario=usuario, comentario = comentario)
+    
+
+@socketio.on('dados_comparador')
+def calcular_similaridade(dados):
+    img1 = dados.get('img1')
+    img2 = dados.get('img2')
+    
+
+    if img1 and img2:
+        # Salva a primeira imagem
+        image1_bytes = base64.b64decode(img1['content'], validate=False)
+        image1_path = f"static/uploads/{session['nome_usuario']}{img1['filename']}"
+        os.makedirs(os.path.dirname(image1_path), exist_ok=True)
+        with open(image1_path, 'wb') as f:
+            f.write(image1_bytes)
+
+        # Salva a segunda imagem
+        image2_bytes = base64.b64decode(img2['content'], validate=False)
+        image2_path = f"static/uploads/{session['id_usuario']}{14451}{img2['filename']}"
+        with open(image2_path, 'wb') as f:
+            f.write(image2_bytes)
+
+        # Calcula a similaridade entre as imagens
+        resultado = Ferramenta.calcular_similaridade(image1_path, image2_path)
+        print(resultado)
+        conn = create_connection()
+        cursor = conn.cursor(dictionary=True, buffered=True)
+        sql = "SELECT COUNT(*) as total_conquistas from conquistas WHERE id_usuario = %s and nome_conquista = %s"
+        valores = (session['id_usuario'], "O MÍMICO",)
+        cursor.execute(sql, valores)
+        conquistas = cursor.fetchone()
+        if conquistas['total_conquistas'] == 0:
+            Conquistas.conquista(8)
+        cursor.close()
+        close_connection(conn)
+
+        # Envia o resultado ao cliente (pode ser o valor da similaridade)
+        emit('dados_similaridade', {'resultado': resultado})
+    else:
+        emit('dados_similaridade', {'erro': "Erro: Imagens não enviadas ou inválidas."})
+
+@app.route('/comparador_rostos', methods=['GET', 'POST'])
+def comparador_rostos():
+    
+    usuario = Usuario.buscarUsuario()
+    if 'id_usuario' not in session:
+        flash("Você precisa estar logado para acessar esta página.", "danger")
+        return redirect(url_for('logcad'))
+    if request.method == 'POST' and request.form.get('comentario') != None:
+        comentario = request.form.get('comentario')
+        Comentario.inserirComentario(comentario, 5)
+        return redirect(url_for('comparador_rostos'))
+    comentario = Comentario.listarComentario(5)
+
+    return render_template('comparador_rostos.html', usuario=usuario, comentario = comentario)
+
+
+
+@app.route('/analise_emocao', methods=['GET', 'POST'])
+def analise_emocao():
+    
+    usuario = Usuario.buscarUsuario()
+    if 'id_usuario' not in session:
+        flash("Você precisa estar logado para acessar esta página.", "danger")
+        return redirect(url_for('logcad'))
+    if request.method == 'POST' and request.form.get('comentario') != None:
+        comentario = request.form.get('comentario')
+        Comentario.inserirComentario(comentario, 6)
+        return redirect(url_for('analise_emocao'))
+    comentario = Comentario.listarComentario(6)
+
+    return render_template('analise_emocao.html', usuario=usuario, comentario = comentario)
+
+
+def convert_numpy_to_json_serializable(obj):
+    if isinstance(obj, (np.int64, np.int32)):
+        return int(obj)
+    elif isinstance(obj, (np.float64, np.float32)):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, tuple):
+        return tuple(convert_numpy_to_json_serializable(item) for item in obj)
+    elif isinstance(obj, dict):
+        return {k: convert_numpy_to_json_serializable(v) for k, v in obj.items()}
+    return obj  
+
+
+
+
+@socketio.on('dados_analise')
+def analise_emocao(dados):
+    img1 = dados.get('img1')
+    
+
+    if img1:
+        # Salva a primeira imagem
+        image1_bytes = base64.b64decode(img1['content'], validate=False)
+        image1_path = f"static/uploads/{session['nome_usuario']}{img1['filename']}"
+        os.makedirs(os.path.dirname(image1_path), exist_ok=True)
+        with open(image1_path, 'wb') as f:
+            f.write(image1_bytes)
+
+        # Calcula a similaridade entre as imagens
+        resultado = Ferramenta.reconhecer_emocao(image1_path)
+       
+        resultado_serializable = convert_numpy_to_json_serializable(resultado)
+        if resultado != False:
+            conn = create_connection()
+            cursor = conn.cursor(dictionary=True, buffered=True)
+            sql = "SELECT COUNT(*) as total_conquistas from conquistas WHERE id_usuario = %s and nome_conquista = %s"
+            valores = (session['id_usuario'], "O DETETIVE",)
+            cursor.execute(sql, valores)
+            conquistas = cursor.fetchone()
+            if conquistas['total_conquistas'] == 0:
+                Conquistas.conquista(9)
+            cursor.close()
+            close_connection(conn)
+            emit('dados_analise', {'resultado': resultado_serializable})
+        else:
+            emit('dados_analise', {'erro': "Erro: Não foi encontrado um rosto na imagem."})
+    else:
+        emit('dados_analise', {'erro': "Erro: Imagens não enviadas ou inválidas."})
+
+
+
+
+@app.route('/texto_voz', methods=['GET', 'POST'])
+def texto_voz():
+    if 'id_usuario' not in session:
+        flash("Você precisa estar logado para acessar esta página.", "danger")
+        return redirect(url_for('logcad'))
+
+    if request.method == 'POST':
+        texto = request.form.get('texto')  # Pegando o texto enviado pelo usuário
+        if not texto:
+            flash("Nenhum texto enviado", "warning")
+            return redirect(url_for('texto_voz'))
+
+        # Converter o texto em áudio
+        try:
+            tts = gTTS(text=texto, lang='pt', slow=False)
+            
+            # Salvar o áudio em um arquivo temporário
+            temp_audio = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
+            tts.save(temp_audio.name)
+
+            # Retornar o arquivo para o usuário
+            return send_file(temp_audio.name, as_attachment=True, download_name="texto_para_audio.mp3", mimetype="audio/mpeg")
+        
+        except Exception as e:
+            flash(f"Ocorreu um erro ao gerar o áudio: {str(e)}", "danger")
+            return redirect(url_for('texto_voz'))
+    
+    return render_template('texto_voz.html')
+
+def pegar_mp4(url):
+    # Definir o diretório de destino
+    download_dir = 'pasta_upload'
+    
+    # Criar o diretório se não existir
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
+
+    ydl_opts = {
+        'format': 'best',
+        'outtmpl': os.path.join(download_dir, '%(title)s.%(ext)s'),  # Caminho completo
+        'max_filesize': 50 * 1024 * 1024,  # Limitar a 50MB
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+    except Exception as e:
+        flash(f"Erro ao tentar baixar MP4: {str(e)}", "danger")
+        raise
+
+# Função para pegar MP3
+def pegar_mp3(url):
+    # Definir o diretório de destino
+    download_dir = 'pasta_upload'
+    
+    # Criar o diretório se não existir
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
+
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': os.path.join(download_dir, '%(title)s.%(ext)s'),  # Caminho completo
+        'postprocessors': [{
+            'key': 'FFmpegAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+    except Exception as e:
+        flash(f"Erro ao tentar baixar MP3: {str(e)}", "danger")
+        raise
+
+
+@app.route('/baixar_site_misterioso', methods=['GET', 'POST'])
+def baixar_site_misterioso():
+    if 'id_usuario' not in session:
+        flash("Você precisa estar logado para acessar esta página.", "danger")
+        return redirect(url_for('logcad'))
+
+    if request.method == 'POST':
+        url = request.form.get('url')  # Pegando a URL enviada pelo usuário
+        formato = request.form.get('formato')  # Pegando o formato escolhido (mp3 ou mp4)
+
+        if not url:
+            flash("Nenhuma URL fornecida", "warning")
+            return redirect(url_for('baixar_site_misterioso'))
+
+        if not formato or formato not in ['mp4', 'mp3']:
+            flash("Formato inválido. Escolha entre MP3 ou MP4.", "danger")
+            return redirect(url_for('baixar_site_misterioso'))
+
+        try:
+            # Realiza o download com base no formato escolhido
+            if formato == 'mp4':
+                pegar_mp4(url)
+                flash("Download do MP4 iniciado!", "success")
+            elif formato == 'mp3':
+                pegar_mp3(url)
+                flash("Download do MP3 iniciado!", "success")
+
+            # Após o download, redireciona para a página onde o usuário pode visualizar o progresso ou resultados
+            return redirect(url_for('baixar_site_misterioso'))
+
+        except Exception as e:
+            flash(f"Erro ao processar o arquivo: {str(e)}", "danger")
+            return redirect(url_for('baixar_site_misterioso'))
+
+    return render_template('baixar_site_misterioso.html')
+
+
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8000, debug=True)
+    print("Servidor iniciado em http://0.0.0.0:8000")
+    http_server = WSGIServer(('0.0.0.0', 8000), app, handler_class=WebSocketHandler)
+    http_server.serve_forever()
 
 
 

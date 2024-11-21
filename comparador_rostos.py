@@ -1,9 +1,9 @@
 import face_recognition
 import dlib
 
-def calcular_similaridade(imagem1_path, imagem2_path):
-    imagem1 = face_recognition.load_image_file(imagem1_path)
-    imagem2 = face_recognition.load_image_file(imagem2_path)
+def calcular_similaridade(imagem1, imagem2):
+    imagem1 = face_recognition.load_image_file(imagem1)
+    imagem2 = face_recognition.load_image_file(imagem2)
 
     if not face_recognition.face_encodings(imagem1):
         return "Não foi possível detectar um rosto na primeira imagem."
@@ -16,9 +16,9 @@ def calcular_similaridade(imagem1_path, imagem2_path):
     distancia = face_recognition.face_distance([face1], face2)[0]
     similaridade = (1 - distancia) * 100
 
-    return f"Similaridade: {similaridade:.2f}%, Distancia: {distancia}%"
+    return f"Similaridade entre os rostos: {similaridade:.2f}%"
 
-imagem1_path = 'foto1.jpg'  
-imagem2_path = 'foto2.jpg' 
-resultado = calcular_similaridade(imagem1_path, imagem2_path)
+imagem1 = 'static/uploads/foto1.jpg'  
+imagem2 = 'static/uploads/foto2.jpg' 
+resultado = calcular_similaridade(imagem1, imagem2)
 print(resultado)
